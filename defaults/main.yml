@@ -1,0 +1,56 @@
+---
+prometheus_components: []
+
+prometheus_os_install_dir: /usr/local/bin
+prometheus_os_systemd_dir: /etc/systemd/system
+prometheus_os_conf_dir: /etc/prometheus
+prometheus_os_pid_dir: /run
+
+prometheus_mirror: https://github.com/prometheus
+
+########################################
+# Prometheus consul service definition
+prometheus_consul_service_enable: false
+prometheus_consul_services: []
+
+
+# prometheus server
+prometheus_server_force_reinstall: false
+prometheus_server_ver: 1.5.0
+prometheus_server_dir: /srv/prometheus/server
+prometheus_server_bin_dir: "{{ prometheus_server_dir  }}/bin"
+prometheus_server_systemd_dir: "{{ prometheus_server_dir  }}/systemd"
+prometheus_server_conf_dir: "{{ prometheus_server_dir  }}/conf"
+prometheus_server_rule_dir: "{{ prometheus_server_conf_dir }}/rule"
+prometheus_server_tgroup_dir: "{{ prometheus_server_conf_dir }}/tgroup"
+prometheus_server_db_dir: "{{ prometheus_server_dir }}/db"
+prometheus_server_log_dir: "{{ prometheus_server_dir }}/log"
+
+prometheus_server_archive_basename: "prometheus-{{ prometheus_server_ver }}.linux-amd64"
+prometheus_server_archive: "{{ prometheus_server_archive_basename }}.tar.gz"
+prometheus_server_mirror: "{{ prometheus_mirror }}/prometheus/releases/download/"
+prometheus_server_url: "{{ prometheus_server_mirror }}/v{{ prometheus_server_ver }}/{{ prometheus_server_archive }}"
+
+
+# alertmanager
+prometheus_alertmanager_ver: 0.5.1
+
+# node_exporter
+prometheus_node_exporter_force_reinstall: false
+prometheus_node_exporter_ver: 0.16.0-rc.0
+prometheus_node_exporter_consul_service_name: node_exporter
+prometheus_node_exporter_group: root
+prometheus_node_exporter_user: root
+prometheus_node_exporter_dir: /srv/prometheus/node_exporter
+prometheus_node_exporter_bin_dir: "{{ prometheus_node_exporter_dir }}/bin"
+prometheus_node_exporter_systemd_dir: "{{ prometheus_node_exporter_dir }}/systemd"
+
+prometheus_node_exporter_archive_basename: "node_exporter-{{ prometheus_node_exporter_ver }}.linux-amd64"
+prometheus_node_exporter_archive: "{{ prometheus_node_exporter_archive_basename }}.tar.gz"
+prometheus_node_exporter_mirror: "{{ prometheus_mirror }}/node_exporter/releases/download"
+prometheus_node_exporter_url: "{{ prometheus_node_exporter_mirror }}/v{{ prometheus_node_exporter_ver}}/{{ prometheus_node_exporter_archive }}"
+
+
+# temporary working dir
+prometheus_temp_workspace_server: /tmp/prometheus_server
+prometheus_temp_workspace_node_exporter: /tmp/prometheus_node_exporter

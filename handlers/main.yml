@@ -1,0 +1,28 @@
+- name: enable prometheus
+  systemd:
+    name: prometheus
+    daemon_reload: yes
+    enabled: yes
+
+- name: start prometheus
+  systemd:
+    name: prometheus
+    daemon_reload: yes
+    state: started
+
+- name: restart prometheus
+  systemd:
+    name: prometheus
+    daemon_reload: yes
+    state: restarted
+
+- name: reload prometheus
+  systemd:
+    name: prometheus
+    state: reloaded
+
+- name: start node_exporter
+  systemd:
+    name: node_exporter
+    daemon_reload: yes
+    state: started

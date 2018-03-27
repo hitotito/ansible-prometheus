@@ -1,0 +1,9 @@
+---
+- name: call hitotio.consul service tasks
+  include_role:
+    name: hitotito.consul
+    tasks_from: service
+    private: yes
+  vars:
+    consul_service_name: "{{ prometheus_node_exporter_consul_service_name }}"
+    consul_service_port: 9100

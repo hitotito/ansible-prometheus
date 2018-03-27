@@ -1,0 +1,20 @@
+[Unit]
+Description=Prometheus server
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=root
+Group=root
+Type=simple
+ExecStart={{ prometheus_os_install_dir }}/prometheus \
+    --config.file={{ prometheus_server_conf_dir }}/prometheus.yml \
+    --storage.local.path={{ prometheus_server_db_dir }} \
+    --web.console.templates={{ prometheus_server_dir }}/consoles \
+    --web.console.libraries={{ prometheus_server_dir }}/console_libraries
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+KillSignal=SIGTERM
+
+[Install]
+WantedBy=multi-user.target

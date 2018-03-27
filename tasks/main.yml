@@ -1,0 +1,16 @@
+---
+
+- name: set_facts
+  import_tasks: set_facts.yml
+
+- name: install prometheus
+  import_tasks: install_prometheus.yml
+  when: "'prometheus' in prometheus_components"
+
+- name: install node_exporter
+  import_tasks: install_node_exporter.yml
+  when: "'node_exporter' in prometheus_components"
+
+- name: install consul service definition
+  import_tasks: consul.yml
+  when: prometheus_consul_service_enable

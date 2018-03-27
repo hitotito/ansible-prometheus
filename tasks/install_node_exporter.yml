@@ -1,0 +1,63 @@
+---
+- name: Find node_exporter version
+  shell: node_exporter --version 2>&1 | sed -n 's/.*version \([^ ]*\).*/\1/p'
+  register: prometheus_node_exporter_current_ver
+  ignore_error: true
+  changed_when: false
+
+- name: reinstall node_exporter
+  when: >
+    prometheus_node_exporter_current_ver.stdout != prometheus_node_exporter_ver or 
+    prometheus_node_exporter_force_reinstall
+  block:
+    - name: remove old binary install
+      file:
+        path: "{{ prometheus_node_exporter_bin_dir }}"
+        state: absent
+
+    - name: create node_exporter directory structure
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: 0755
+      with_items:
+        - "{{ prometheus_node_exporter_bin_dir }}"
+        - "{{ prometheus_node_exporter_systemd_dir }}"
+
+    - name: download node_exporter
+      get_url:
+        url: "{{ prometheus_node_exporter_url }}"
+        dest: /tmp/node_exporter.tar.gz
+        mode: 0644
+
+    - name: unarchive node_exporter
+      unarchive:
+        remote_src: yes
+        src: /tmp/node_exporter.tar.gz
+        dest: "{{ prometheus_node_exporter_bin_dir }}"
+        extra_opts: [--strip-components=1]
+
+  always:
+    - name: cleanup
+      file:
+        path: /tmp/node_exporter.tar.gz
+        state: absent
+
+- name: install node_exporter systemd service file
+  template:
+    src: node_exporter.service.j2
+    dest: "{{ prometheus_node_exporter_systemd_dir }}/node_exporter.service"
+    #owner: bin
+    #group: wheel
+    mode: 0755
+  notify: start node_exporter
+    
+- name: create node_exporter symlinks
+  file:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    state: link
+  with_items:
+    - { src: "{{ prometheus_node_exporter_bin_dir }}/node_exporter", dest: "{{ prometheus_os_install_dir }}/node_exporter" }
+    - { src: "{{ prometheus_node_exporter_systemd_dir }}/node_exporter.service", dest: "{{ prometheus_os_systemd_dir }}/node_exporter.service" }
+  notify: start node_exporter

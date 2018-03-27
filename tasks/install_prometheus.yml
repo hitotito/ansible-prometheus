@@ -1,0 +1,90 @@
+---
+- name: Find prometheus version
+  shell: prometheus --version 2>&1 | sed -n 's/.*version \([^ ]*\).*/\1/p'
+  register: prometheus_server_current_ver
+  ignore_error: true
+  changed_when: false
+
+- name: reinstall prometheus server
+  when: >
+    prometheus_server_current_ver.stdout != prometheus_server_ver or
+    prometheus_server_force_reinstall
+  block:
+    - name: create prometheus directory structure
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: 0755
+      with_items:
+        - "{{ prometheus_server_bin_dir }}"
+        - "{{ prometheus_server_systemd_dir }}"
+        - "{{ prometheus_server_conf_dir }}"
+        - "{{ prometheus_server_rule_dir }}"
+        - "{{ prometheus_server_tgroup_dir }}"
+        - "{{ prometheus_server_db_dir }}"
+        - "{{ prometheus_server_log_dir }}"
+        - "{{ prometheus_temp_workspace_server }}"
+
+    - name: download prometheus server
+      get_url:
+        url: "{{ prometheus_server_url }}"
+        dest: "{{ prometheus_temp_workspace_server }}/{{ prometheus_server_archive }}"
+        mode: 0644
+
+    - name: unarchive prometheus server
+      unarchive:
+        remote_src: yes
+        src: "{{ prometheus_temp_workspace_server }}/{{ prometheus_server_archive }}"
+        dest: "{{ prometheus_temp_workspace_server }}"
+        extra_opts: [--strip-components=1]
+
+    - name: copy prometheus server files
+      command: cp -R "{{ item.src }}" "{{ item.dest }}"
+      with_items:
+        - { src: "{{ prometheus_temp_workspace_server }}/prometheus", dest: "{{ prometheus_server_bin_dir }}" }
+        - { src: "{{ prometheus_temp_workspace_server }}/promtool", dest: "{{ prometheus_server_bin_dir }}" }
+        - { src: "{{ prometheus_temp_workspace_server }}/consoles/", dest: "{{ prometheus_server_dir }}" }
+        - { src: "{{ prometheus_temp_workspace_server }}/console_libraries/", dest: "{{ prometheus_server_dir }}" }
+
+  always:
+    - name: cleanup
+      file:
+        path: "{{ prometheus_temp_workspace_server }}"
+        state: absent
+
+- name: copy /etc/default/prometheus
+  template:
+    src: "server/etc-default-prometheus.j2"
+    dest: "/etc/default/prometheus"
+    mode: 0755
+
+- name: install prometheus configuration
+  template:
+    src: "server/prometheus.yml.j2"
+    dest: "{{ prometheus_server_conf_dir }}/prometheus.yml"
+    mode: 0644
+  notify:
+    - reload prometheus
+
+- name: install systemd service
+  template:
+    src: "server/prometheus.service.j2"
+    dest: "{{ prometheus_server_systemd_dir }}/prometheus.service"
+    mode: 0755
+  notify:
+    - enable prometheus
+    - restart prometheus
+
+- name: create symlinks
+  file:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    state: link
+  with_items:
+    - { src: "{{ prometheus_server_bin_dir }}/prometheus", dest: "{{ prometheus_os_install_dir }}/prometheus" }
+    - { src: "{{ prometheus_server_systemd_dir }}/prometheus.service", dest: "{{ prometheus_os_systemd_dir }}/prometheus.service" }
+    - { src: "{{ prometheus_server_conf_dir }}", dest: "{{ prometheus_os_conf_dir }}" }
+  notify: 
+    - enable prometheus
+    - start prometheus
+

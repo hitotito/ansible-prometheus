@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  author: Hitoshi Okonogi
+  description: role to install prometheus
+  licence:
+    - MIT
+  min_ansible_version: 2.2
+  platforms:
+    - name: Debian
+      versions:
+        - jessie
+        - stretch
+  galaxy_tags:
+    - monitoring
+    - node_exporter
+    - prometheus
+    - system
