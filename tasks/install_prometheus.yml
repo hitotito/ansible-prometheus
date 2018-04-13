@@ -2,7 +2,7 @@
 - name: Find prometheus version
   shell: prometheus --version 2>&1 | sed -n 's/.*version \([^ ]*\).*/\1/p'
   register: prometheus_server_current_ver
-  ignore_error: true
+  ignore_errors: true
   changed_when: false
 
 - name: reinstall prometheus server

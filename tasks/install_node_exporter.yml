@@ -2,7 +2,7 @@
 - name: Find node_exporter version
   shell: node_exporter --version 2>&1 | sed -n 's/.*version \([^ ]*\).*/\1/p'
   register: prometheus_node_exporter_current_ver
-  ignore_error: true
+  ignore_errors: true
   changed_when: false
 
 - name: reinstall node_exporter
