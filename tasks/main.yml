@@ -1,5 +1,4 @@
 ---
-
 - name: set_facts
   import_tasks: set_facts.yml
 

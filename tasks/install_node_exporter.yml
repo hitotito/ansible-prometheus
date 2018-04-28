@@ -1,13 +1,7 @@
 ---
-- name: Find node_exporter version
-  shell: node_exporter --version 2>&1 | sed -n 's/.*version \([^ ]*\).*/\1/p'
-  register: prometheus_node_exporter_current_ver
-  ignore_errors: true
-  changed_when: false
-
 - name: reinstall node_exporter
   when: >
-    prometheus_node_exporter_current_ver.stdout != prometheus_node_exporter_ver or 
+    hostvars[inventory_hostname].ansible_local.hitotito_prometheus.node_exporter.version != prometheus_node_exporter_ver or
     prometheus_node_exporter_force_reinstall
   block:
     - name: remove old binary install

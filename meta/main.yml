@@ -14,3 +14,8 @@ galaxy_info:
     - nodeexporter
     - prometheus
     - system
+
+dependencies:
+  - role: hitotito.custom-facts
+    custom_facts_name: hitotito_prometheus
+    custom_facts_file: prometheus.fact
