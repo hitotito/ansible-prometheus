@@ -4,7 +4,7 @@
     hostvars[inventory_hostname].ansible_local.hitotito_prometheus.node_exporter.version != prometheus_node_exporter_ver or
     prometheus_node_exporter_force_reinstall
   block:
-    - name: remove old binary install
+    - name: remove old node_exporter binary install
       file:
         path: "{{ prometheus_node_exporter_bin_dir }}"
         state: absent
