@@ -7,3 +7,5 @@
   vars:
     consul_service_name: "{{ prometheus_node_exporter_consul_service_name }}"
     consul_service_ports: [9100]
+
+# TODO - above needs to be done for all: [prometheus-server, node_exporter, alertmanager]

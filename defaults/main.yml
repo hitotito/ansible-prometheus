@@ -16,7 +16,7 @@ prometheus_consul_services: []
 
 # prometheus server
 prometheus_server_force_reinstall: false
-prometheus_server_ver: 1.5.0
+prometheus_server_ver: 2.3.2
 prometheus_server_dir: /srv/prometheus/server
 prometheus_server_bin_dir: "{{ prometheus_server_dir  }}/bin"
 prometheus_server_systemd_dir: "{{ prometheus_server_dir  }}/systemd"

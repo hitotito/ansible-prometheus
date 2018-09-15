@@ -13,7 +13,7 @@ def prometheus_facts():
         CMD_VERSION = ['prometheus', '--version']
         (out, err) = subprocess.Popen(CMD_VERSION, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
         pattern = re.compile('.*version ([^ ]*).*')
-        matches = pattern.match(out)
+        matches = pattern.match(err)
         version = matches.group(1)
         installed = True
     except Exception as e:
