@@ -1,24 +1,27 @@
 ---
+- name: create prometheus directory structure
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ prometheus_server_bin_dir }}"
+    - "{{ prometheus_server_systemd_dir }}"
+    - "{{ prometheus_server_conf_dir }}"
+    - "{{ prometheus_server_rule_dir }}"
+    - "{{ prometheus_server_tgroup_dir }}"
+    - "{{ prometheus_server_db_dir }}"
+    - "{{ prometheus_server_log_dir }}"
+    - "{{ prometheus_temp_workspace_server }}"
+
+# -  debug:
+#      var: hostvars[inventory_hostname].ansible_local.hitotito_prometheus.prometheus.version
+
 - name: reinstall prometheus server
   when: >
     hostvars[inventory_hostname].ansible_local.hitotito_prometheus.prometheus.version != prometheus_server_ver or
     prometheus_server_force_reinstall
   block:
-    - name: create prometheus directory structure
-      file:
-        path: "{{ item }}"
-        state: directory
-        mode: 0755
-      with_items:
-        - "{{ prometheus_server_bin_dir }}"
-        - "{{ prometheus_server_systemd_dir }}"
-        - "{{ prometheus_server_conf_dir }}"
-        - "{{ prometheus_server_rule_dir }}"
-        - "{{ prometheus_server_tgroup_dir }}"
-        - "{{ prometheus_server_db_dir }}"
-        - "{{ prometheus_server_log_dir }}"
-        - "{{ prometheus_temp_workspace_server }}"
-
     - name: download prometheus server
       get_url:
         url: "{{ prometheus_server_url }}"
