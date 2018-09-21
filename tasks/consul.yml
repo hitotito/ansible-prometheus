@@ -1,12 +1,33 @@
 ---
-- name: call hitotio.consul service tasks
+- name: CONSUL | Call hitotito.consul service tasks [prometheus_server]
+  when: "'prometheus' in prometheus_components"
+  include_role:
+    name: hitotito.consul
+    tasks_from: service
+    private: yes
+  vars:
+    consul_service_name: "{{ prometheus_server_consul_service_name }}"
+    consul_service_check: "http"
+    consul_service_ports: ["{{ prometheus_port_server }}"]
+
+- name: CONSUL | Call hitotito.consul service tasks [node-exporter]
+  when: "'alertmanager' in prometheus_components"
+  include_role:
+    name: hitotito.consul
+    tasks_from: service
+    private: yes
+  vars:
+    consul_service_name: "{{ prometheus_alertmanager_consul_service_name }}"
+    consul_service_check: "http"
+    consul_service_ports: ["{{ prometheus_port_alertmager }}"]
+
+- name: CONSUL | Call hitotito.consul service tasks [node-exporter]
+  when: "'node_exporter' in prometheus_components"
   include_role:
     name: hitotito.consul
     tasks_from: service
     private: yes
   vars:
     consul_service_name: "{{ prometheus_node_exporter_consul_service_name }}"
-    consul_service_check: 'http'
-    consul_service_ports: [9100]
-
-# TODO - above needs to be done for all: [prometheus-server, node_exporter, alertmanager]
+    consul_service_check: "http"
+    consul_service_ports: ["{{ prometheus_port_node_exporter }}"]
