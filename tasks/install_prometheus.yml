@@ -14,9 +14,6 @@
     - "{{ prometheus_server_log_dir }}"
     - "{{ prometheus_temp_workspace_server }}"
 
-# -  debug:
-#      var: hostvars[inventory_hostname].ansible_local.hitotito_prometheus.prometheus.version
-
 - name: reinstall prometheus server
   when: >
     hostvars[inventory_hostname].ansible_local.hitotito_prometheus.prometheus.version != prometheus_server_ver or
